@@ -1171,6 +1171,8 @@ class CppBackend extends Backend {
       out_h.write("  void print ( FILE* f );\n")
       out_h.write("  void print ( std::ostream& s );\n")
 
+      out_h.write("  dat_t<32> getInst();\n")
+
       // If we're generating multiple dump methods, wrap them in private/public.
       if (nDumpMethods > 1) {
         out_h.write(" private:\n")
@@ -1313,6 +1315,20 @@ class CppBackend extends Backend {
       }
       if (hasPrintfs) {
         writeCppFile("s.flush();\n");
+      }
+      writeCppFile("}\n")
+    }
+
+    def genGetInstMethod() {
+      writeCppFile("dat_t<32> " + c.name + "_t::getInst () {\n")
+      for (cc <- Driver.components; p <- cc.printfs) {
+        var count = 0
+        for (thing <- p.args) {
+          if (count == 11) {
+            writeCppFile("return " + emitRef(thing) + ";\n")
+          }
+          count = count + 1
+        }
       }
       writeCppFile("}\n")
     }
@@ -1672,6 +1688,7 @@ class CppBackend extends Backend {
     // generate print(...) method.
     createCppFile()
     genPrintMethod()
+    genGetInstMethod()
 
     createCppFile()
     val nDumpInitMethods = genDumpInitMethod(vcd)
