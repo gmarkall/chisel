@@ -1319,6 +1319,9 @@ class CppBackend extends Backend {
       writeCppFile("}\n")
     }
 
+    // Hack to produce a method that allows the emulator to check what the
+    // current instruction is. The 11th component seems to be the one holding
+    // the instruction.
     def genGetInstMethod() {
       writeCppFile("dat_t<32> " + c.name + "_t::getInst () {\n")
       for (cc <- Driver.components; p <- cc.printfs) {
